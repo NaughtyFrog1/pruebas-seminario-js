@@ -39,7 +39,7 @@ function validate(object, schema) {
   // Validar que las claves sean válidas
   Object.entries(schema).forEach(([key, validate]) => {
     if (validate.required && !object.hasOwnProperty(key)) {
-      errors.push(`${key} is requiered`)
+      errors.push(`${key} is required`)
     } else if (object.hasOwnProperty(key) && !validate(object[key])) {
       errors.push(`${key} is invalid`)
     }

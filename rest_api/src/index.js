@@ -14,6 +14,7 @@ app.use(express.json())
 
 //* Routes
 app.use(require('./routes/index'))
+app.use('/api/movies', require('./routes/movies'))
 
 //* Start server
 app.listen(app.get('port'), () => {
