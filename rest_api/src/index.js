@@ -12,6 +12,9 @@ app.use(morgan('dev'))
 app.use(express.urlencoded({ extended: false }))
 app.use(express.json())
 
+//* Routes
+app.use(require('./routes/index'))
+
 //* Start server
 app.listen(app.get('port'), () => {
   console.log('Server on port:', app.get('port'), '\n\n')
