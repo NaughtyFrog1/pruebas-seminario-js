@@ -21,6 +21,21 @@ router.get('/', (req, res) => {
   res.json(readFile(MOVIES_PATH))
 })
 
+router.get('/:id', (req, res) => {
+  const parsedId = parseInt(req.params.id, 10)
+  if (Number.isNaN(parsedId)) {
+    res.status(400).json(['invalid id'])
+    return
+  }
+
+  const movie = readFile(MOVIES_PATH).find(({ id }) => id === parsedId)
+  if (movie === undefined) {
+    res.status(404).json(['movie not found'])
+  } else {
+    res.status(200).json(movie)
+  }
+})
+
 router.post('/', (req, res) => {
   const errors = validateSchema(req.body, movieSchema)
   if (errors.length > 0) {
