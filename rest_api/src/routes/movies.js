@@ -18,7 +18,22 @@ movieSchema.year.required = true
 movieSchema.rating.required = true
 
 router.get('/', (req, res) => {
-  res.json(readFile(MOVIES_PATH))
+  const resp = { status: 200, data: null }
+  if (req.query.hasOwnProperty('year')) {
+    const parsedYear = parseInt(req.query.year, 10)
+    if (Number.isNaN(parsedYear)) {
+      resp.status = 400
+      resp.data = ['year is invalid']
+    } else {
+      resp.data = readFile(MOVIES_PATH).filter(
+        ({ year }) => year === parsedYear
+      )
+      if (resp.data.length === 0) resp.status = 404
+    }
+  } else {
+    resp.data = readFile(MOVIES_PATH)
+  }
+  res.status(resp.status).json(resp.data)
 })
 
 router.get('/:id', (req, res) => {
