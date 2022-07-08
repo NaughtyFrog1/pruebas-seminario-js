@@ -23,14 +23,14 @@ router.get('/', (req, res) => {
 
 router.post('/', (req, res) => {
   const errors = validateSchema(req.body, movieSchema)
-
-  console.log(errors)
-
   if (errors.length > 0) {
     res.status(400).json(errors)
   } else {
     const movies = readFile(MOVIES_PATH)
-    const newMovie = { id: movies.length + 1, ...req.body }
+    const newMovie = {
+      id: (movies[movies.length - 1]?.id ?? 0) + 1,
+      ...req.body,
+    }
     movies.push(newMovie)
     writeFile(MOVIES_PATH, movies)
     res.status(200).json(movies)
