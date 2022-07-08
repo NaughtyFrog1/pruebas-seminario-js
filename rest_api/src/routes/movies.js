@@ -55,4 +55,26 @@ router.delete('/:id', (req, res) => {
   }
 })
 
+router.put('/:id', (req, res) => {
+  const parsedId = parseInt(req.params.id, 10)
+  if (Number.isNaN(parsedId)) {
+    res.status(400).json(['invalid id'])
+    return
+  }
+
+  const errors = validateSchema(req.body, movieSchema)
+  if (errors.length > 0) {
+    res.status(400).json(errors)
+    return
+  }
+
+  const movies = readFile(MOVIES_PATH)
+  const newMovies = movies.map((movie) =>
+    movie.id === parsedId ? { id: parsedId, ...req.body } : movie
+  )
+
+  writeFile(MOVIES_PATH, newMovies)
+  res.status(200).json(newMovies)
+})
+
 module.exports = router
