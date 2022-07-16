@@ -3,7 +3,7 @@ const app = express()
 const httpServer = require('http').createServer(app)
 const io = require('socket.io')(httpServer)
 
-const roomsHandlers = require('./handlers/roomsHandlers')
+const reversiHandlers = require('./handlers/reversiHandlers')
 
 //* Settings
 app.set('port', process.env.PORT || 3000)
@@ -13,7 +13,7 @@ app.use(express.static('public'))
 
 //* Sockets
 io.on('connection', (socket) => {
-  roomsHandlers(io, socket)
+  reversiHandlers(io, socket)
 })
 
 //* Start server
