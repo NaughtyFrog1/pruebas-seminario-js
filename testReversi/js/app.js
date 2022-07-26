@@ -32,9 +32,9 @@ function renderBoard(board) {
 }
 
 function updateBoard(board) {
-  for (let pos = 0; pos < 64; pos++) {
-    $board.children[pos].dataset.pieceType = board[parseInt(pos / 8)][pos % 8]
-  }
+  $board.childNodes.forEach(
+    (square, i) => (square.dataset.pieceType = board[parseInt(i / 8)][i % 8])
+  )
 }
 
 renderBoard(board)
