@@ -1,9 +1,9 @@
 const board = [
   ['', '', '', '', '', '', '', ''],
   ['', '', '', '', '', '', '', ''],
-  ['', '', '', '', '', '', '', ''],
-  ['', '', '', 'white', 'black', '', '', ''],
-  ['', '', '', 'black', 'white', '', '', ''],
+  ['', '', '', 'black', '', '', '', ''],
+  ['', '', '', 'black', 'black', 'white', '', ''],
+  ['', '', '', 'black', 'black', 'black', '', ''],
   ['', '', '', '', '', '', '', ''],
   ['', '', '', '', '', '', '', ''],
   ['', '', '', '', '', '', '', ''],
@@ -14,7 +14,7 @@ function isValidPosition(row, col) {
   return row >= 0 && row < 8 && col >= 0 && col < 8
 }
 
-// isValidMove - getMove
+// isValidMove - getTilesToFlip
 function isValidMove(tile, board, xStart, yStart) {
   if (!isValidPosition(xStart, yStart) || board[xStart][yStart] !== '') {
     return []
@@ -34,13 +34,13 @@ function isValidMove(tile, board, xStart, yStart) {
   ]
 
   directions.forEach(([xDirection, yDirection]) => {
-    let x = xStart + xDirection
-    let y = yStart + yDirection
+    let x = xStart
+    let y = yStart
 
-    while (isValidPosition(x, y) && board[x][y] === opponentTile) {
+    do {
       x += xDirection
       y += yDirection
-    }
+    } while (isValidPosition(x, y) && board[x][y] === opponentTile)
     if (isValidPosition(x, y) && board[x][y] === tile) {
       x -= xDirection
       y -= yDirection
