@@ -1,0 +1,35 @@
+body {
+  background-color: darksalmon;
+}
+
+.fill {
+  background-image: url('./image.jpeg');
+  position: relative;
+  height: 150px;
+  width: 150px;
+  top: 5px;
+  left: 5px;
+  cursor: move;
+}
+
+.empty {
+  display: inline-block;
+  height: 160px;
+  width: 160px;
+  margin: 10px;
+  border: 3px salmon solid;
+  background-color: #fff;
+}
+
+.hold {
+  border: solid gainsboro 4px;
+}
+
+.hovered {
+  background-color: #e3e3e3;
+  border-style: dashed;
+}
+
+.invisible {
+  display: none;
+}
