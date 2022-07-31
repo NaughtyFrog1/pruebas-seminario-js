@@ -9,6 +9,10 @@ const SHIPS = Object.freeze({
   destroyer: 2,
 })
 
+const boardState = initializeBoardState()
+const shipPositionsState = initializeShipPositionState()
+const shipHitsState = intitializeShipHitsState()
+
 const $playerStatus = document.querySelector('#bbPlayerStatus')
 const $adversaryStatus = document.querySelector('#bbAdversaryStatus')
 const $playerBoard = document.querySelector('#bbPlayerBoard')
@@ -20,16 +24,6 @@ const $inputCol = document.querySelector('#bbShipPositionCol')
 const $btnConfirmShip = document.querySelector('#bbBtnConfirmShip')
 const $bntConfirmAll = document.querySelector('#bbBtnConfimAll')
 const $shipPreview = document.querySelector('#bbShipPreview')
-
-const shipPositionsState = Object.keys(SHIPS).reduce((obj, ship) => {
-  obj[ship] = { row: 0, col: 0, direction: 'horizontal', positioned: false }
-  return obj
-}, {})
-
-const shipHitsStateBak = Object.keys(SHIPS).reduce((obj, ship) => {
-  obj[ship] = 0
-  return obj
-}, {})
 
 /*
   Program
@@ -48,6 +42,32 @@ $inputCol.addEventListener('change', handleInputPositionChange)
 /*
   Functions
 */
+
+function initializeBoardState() {
+  const board = []
+  for (let row = 0; row < SQUARES; row++) {
+    const boardRow = []
+    for (let col = 0; col < SQUARES; col++) {
+      boardRow.push({ hit: false, ship: '' })
+    }
+    board.push(boardRow)
+  }
+  return board
+}
+
+function initializeShipPositionState() {
+  return Object.keys(SHIPS).reduce((obj, ship) => {
+    obj[ship] = { row: 0, col: 0, direction: 'horizontal', positioned: false }
+    return obj
+  }, {})
+}
+
+function intitializeShipHitsState() {
+  return Object.keys(SHIPS).reduce((obj, ship) => {
+    obj[ship] = 0
+    return obj
+  }, {})
+}
 
 function renderBoard(board) {
   for (let row = 0; row < SQUARES ** 2; row++) {
