@@ -32,3 +32,45 @@ body {
 .bb-input-ship-position {
   width: 5em;
 }
+
+#bbShipPreview {
+  transition: top .35s ease-in-out, left .5s ease-in-out;
+  opacity: 0.8;
+}
+
+.bb-ship {
+  height: var(--square-size);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.bb-ship__body {
+  background-color: #212529;
+  height: 66%;
+  width: var(--square-size);
+}
+
+.bb-ship__body--head {
+  width: calc(var(--square-size) * 0.8);
+  border-top-left-radius: 0;
+  border-top-right-radius: 100% 50%;
+  border-bottom-right-radius: 100% 50%;
+  border-bottom-left-radius: 0;
+}
+
+.bb-ship__body--tail {
+  width: calc(var(--square-size) * 0.8);
+  margin-left: calc(var(--square-size) * 0.2);
+  border-top-left-radius: 25% 50%;
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+  border-bottom-left-radius: 25% 50%;
+}
+
+.bb-ship--vetical .bb-ship__body--head {
+
+}
+.bb-ship--vetical .bb-ship__body--tail {
+
+}

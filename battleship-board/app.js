@@ -33,11 +33,16 @@ document.documentElement.style.setProperty('--square-size', `${SQUARE_SIZE}px`)
 
 renderBoard($playerBoard)
 renderBoard($adversaryBoard)
+handleInputShipChange()
 
 $inputShip.addEventListener('change', handleInputShipChange)
 $inputDirection.addEventListener('change', handleInptutShipDirectionChange)
-$inputRow.addEventListener('change', handleInputPositionChange)
-$inputCol.addEventListener('change', handleInputPositionChange)
+$inputRow.addEventListener('input', handleInputPositionChange)
+$inputCol.addEventListener('input', handleInputPositionChange)
+
+$inputRow.addEventListener('keypress', (e) => e.preventDefault())
+$inputCol.addEventListener('keypress', (e) => e.preventDefault())
+
 
 /*
   Functions
@@ -77,19 +82,53 @@ function renderBoard(board) {
   }
 }
 
+function renderShipPreview(ship, direction) {
+  const shipDiv = document.createElement('div')
+  shipDiv.classList.add('bb-ship')
+  if (direction === 'vertical') {
+    shipDiv.classList.add('bb-ship--vertical')
+  }
 
+  for (let i = 0; i < SHIPS[ship]; i++) {
+    const shipBody = document.createElement('div')
+    shipBody.classList.add('bb-ship__body')
+    shipDiv.appendChild(shipBody)
+  }
+  shipDiv.children[0].classList.add('bb-ship__body--tail')
+  shipDiv.children[shipDiv.children.length - 1].classList.add(
+    'bb-ship__body--head'
+  )
+
+  $shipPreview.innerHTML = ''
+  $shipPreview.appendChild(shipDiv)
+}
+
+function moveShipPreview(row, col) {
+  $shipPreview.style.top = `${row * SQUARE_SIZE}px`
+  $shipPreview.style.left = `${col * SQUARE_SIZE}px`
+}
 
 function handleInputShipChange() {
-  const ship = $inputShip.options[$inputShip.selectedIndex].value
+  $inputRow.value = shipPositionsState[$inputShip.value].row
+  $inputCol.value = shipPositionsState[$inputShip.value].col
+  $inputDirection.value = shipPositionsState[$inputShip.value].direction
 
+  if ($inputDirection.value === 'horizontal') {
+    $inputRow.max = SQUARES - 1
+    $inputCol.max = SQUARES - SHIPS[$inputShip.value]
+  } else {
+    $inputRow.max = SQUARES - SHIPS[$inputShip.value]
+    $inputCol.max = SQUARES - 1
+  }
+
+  renderShipPreview($inputShip.value)
+  moveShipPreview($inputRow.value, $inputCol.value)
 }
 
 function handleInptutShipDirectionChange() {
-  const direction = $inputDirection.options[$inputDirection.selectedIndex].value
-
+  console.log(this.value)
 }
 
 function handleInputPositionChange() {
-  const row = $inputRow.value
-  const col = $inputCol.value
+  moveShipPreview($inputRow.value, $inputCol.value)
 }
