@@ -1,7 +1,3 @@
-:root {
-  --square-size: 35px;
-}
-
 .form-control:focus,
 .form-select:focus {
   border-color: #1a1e21;
@@ -37,29 +33,30 @@ body {
   opacity: 0.8;
 }
 
-.bb-ship {
-  height: var(--square-size);
+.bb-ship-preview {
   display: flex;
-  justify-content: center;
-  align-items: center;
+}
+
+.bb-ship-preview--horizontal {
+  flex-direction: row;
+}
+
+.bb-ship-preview--vertical {
+  flex-direction: column-reverse;
 }
 
 .bb-ship__body {
   background-color: #212529;
-  height: 66%;
+}
+
+.bb-ship--horizontal .bb-ship__body {
   width: var(--square-size);
+  height: calc(var(--square-size) * 0.6);
+  margin: calc(var(--square-size) * 0.2) 0;
 }
 
-.bb-ship__body--head {
-  width: calc(var(--square-size) * 0.8);
-  border-top-left-radius: 0;
-  border-top-right-radius: 100% 50%;
-  border-bottom-right-radius: 100% 50%;
-  border-bottom-left-radius: 0;
-}
-
-.bb-ship__body--tail {
-  width: calc(var(--square-size) * 0.8);
+.bb-ship--horizontal .bb-ship__body.bb-ship__body--tail {
+  width:calc(var(--square-size) * 0.8);
   margin-left: calc(var(--square-size) * 0.2);
   border-top-left-radius: 25% 50%;
   border-top-right-radius: 0;
@@ -67,15 +64,28 @@ body {
   border-bottom-left-radius: 25% 50%;
 }
 
-.bb-ship--vertical {
-  flex-direction: column-reverse;
-  height: 100%;
-  width: var(--square-size);
+.bb-ship--horizontal .bb-ship__body.bb-ship__body--head {
+  width:calc(var(--square-size) * 0.8);
+  margin-right: calc(var(--square-size) * 0.2);
+  border-top-left-radius: 0;
+  border-top-right-radius: 100% 50%;
+  border-bottom-right-radius: 100% 50%;
+  border-bottom-left-radius: 0;
 }
 
 .bb-ship--vertical .bb-ship__body {
   height: var(--square-size);
-  width: 66%;
+  width: calc(var(--square-size) * 0.6);
+  margin: 0 calc(var(--square-size) * 0.2);
+}
+
+.bb-ship--vertical .bb-ship__body--tail {
+  height: calc(var(--square-size) * 0.8);
+  margin-bottom: calc(var(--square-size) * 0.2);
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 50% 25%;
+  border-bottom-left-radius: 50% 25%;
 }
 
 .bb-ship--vertical .bb-ship__body--head {
@@ -85,13 +95,4 @@ body {
   border-top-right-radius: 50% 100%;
   border-bottom-right-radius: 0;
   border-bottom-left-radius: 0;
-}
-
-.bb-ship--vertical .bb-ship__body--tail {
-  height: calc(var(--square-size) * 0.8);
-  margin-left: 0;
-  border-top-left-radius: 0;
-  border-top-right-radius: 0;
-  border-bottom-right-radius: 50% 25%;
-  border-bottom-left-radius: 50% 25%;
 }
