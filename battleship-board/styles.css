@@ -34,7 +34,6 @@ body {
 }
 
 #bbShipPreview {
-  transition: top .35s ease-in-out, left .5s ease-in-out;
   opacity: 0.8;
 }
 
@@ -68,9 +67,31 @@ body {
   border-bottom-left-radius: 25% 50%;
 }
 
-.bb-ship--vetical .bb-ship__body--head {
-
+.bb-ship--vertical {
+  flex-direction: column-reverse;
+  height: 100%;
+  width: var(--square-size);
 }
-.bb-ship--vetical .bb-ship__body--tail {
 
+.bb-ship--vertical .bb-ship__body {
+  height: var(--square-size);
+  width: 66%;
+}
+
+.bb-ship--vertical .bb-ship__body--head {
+  height: calc(var(--square-size) * 0.8);
+  margin-top: calc(var(--square-size) * 0.2);
+  border-top-left-radius: 50% 100%;
+  border-top-right-radius: 50% 100%;
+  border-bottom-right-radius: 0;
+  border-bottom-left-radius: 0;
+}
+
+.bb-ship--vertical .bb-ship__body--tail {
+  height: calc(var(--square-size) * 0.8);
+  margin-left: 0;
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 50% 25%;
+  border-bottom-left-radius: 50% 25%;
 }

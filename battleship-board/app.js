@@ -35,14 +35,13 @@ renderBoard($playerBoard)
 renderBoard($adversaryBoard)
 handleInputShipChange()
 
-$inputShip.addEventListener('change', handleInputShipChange)
-$inputDirection.addEventListener('change', handleInptutShipDirectionChange)
+$inputShip.addEventListener('input', handleInputShipChange)
+$inputDirection.addEventListener('input', handleInptutShipDirectionChange)
 $inputRow.addEventListener('input', handleInputPositionChange)
 $inputCol.addEventListener('input', handleInputPositionChange)
 
 $inputRow.addEventListener('keypress', (e) => e.preventDefault())
 $inputCol.addEventListener('keypress', (e) => e.preventDefault())
-
 
 /*
   Functions
@@ -108,25 +107,37 @@ function moveShipPreview(row, col) {
   $shipPreview.style.left = `${col * SQUARE_SIZE}px`
 }
 
+function updateInputPositionMax(ship, direction) {
+  if (direction === 'horizontal') {
+    $inputRow.max = SQUARES - 1
+    $inputCol.max = SQUARES - SHIPS[ship]
+  } else {
+    $inputRow.max = SQUARES - SHIPS[ship]
+    $inputCol.max = SQUARES - 1
+  }
+}
+
 function handleInputShipChange() {
   $inputRow.value = shipPositionsState[$inputShip.value].row
   $inputCol.value = shipPositionsState[$inputShip.value].col
   $inputDirection.value = shipPositionsState[$inputShip.value].direction
 
-  if ($inputDirection.value === 'horizontal') {
-    $inputRow.max = SQUARES - 1
-    $inputCol.max = SQUARES - SHIPS[$inputShip.value]
-  } else {
-    $inputRow.max = SQUARES - SHIPS[$inputShip.value]
-    $inputCol.max = SQUARES - 1
-  }
-
   renderShipPreview($inputShip.value)
+  updateInputPositionMax($inputShip.value, $inputDirection.value)
   moveShipPreview($inputRow.value, $inputCol.value)
 }
 
 function handleInptutShipDirectionChange() {
-  console.log(this.value)
+  if ($inputDirection.value === 'horizontal') {
+    $shipPreview.firstElementChild.classList.remove('bb-ship--vertical')
+  } else if ($inputDirection.value === 'vertical') {
+    $shipPreview.firstElementChild.classList.add('bb-ship--vertical')
+  }
+  $inputRow.value = 0
+  $inputCol.value = 0
+
+  updateInputPositionMax()
+  moveShipPreview($inputRow.value, $inputCol.value)
 }
 
 function handleInputPositionChange() {
