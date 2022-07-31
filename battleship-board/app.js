@@ -25,9 +25,7 @@ const $btnConfirmShip = document.querySelector('#bbBtnConfirmShip')
 const $bntConfirmAll = document.querySelector('#bbBtnConfimAll')
 const $shipPreview = document.querySelector('#bbShipPreview')
 
-/*
-  Program
-*/
+//* Program
 
 document.documentElement.style.setProperty('--square-size', `${SQUARE_SIZE}px`)
 
@@ -35,17 +33,18 @@ renderBoard($playerBoard)
 renderBoard($adversaryBoard)
 handleInputShipChange()
 
+//* Events
+
 $inputShip.addEventListener('input', handleInputShipChange)
 $inputDirection.addEventListener('input', handleInptutShipDirectionChange)
 $inputRow.addEventListener('input', handleInputPositionChange)
 $inputCol.addEventListener('input', handleInputPositionChange)
 
+// Disable writing
 $inputRow.addEventListener('keypress', (e) => e.preventDefault())
 $inputCol.addEventListener('keypress', (e) => e.preventDefault())
 
-/*
-  Functions
-*/
+//* Functions
 
 function initializeBoardState() {
   const board = []
@@ -136,7 +135,7 @@ function handleInptutShipDirectionChange() {
   $inputRow.value = 0
   $inputCol.value = 0
 
-  updateInputPositionMax()
+  updateInputPositionMax($inputShip.value, $inputDirection.value)
   moveShipPreview($inputRow.value, $inputCol.value)
 }
 
