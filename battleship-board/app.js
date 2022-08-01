@@ -204,16 +204,43 @@ function changeDirectionEffect() {
   ui.renderShipPreview($shipPreview, $inputShip.value, $inputDirection.value)
 }
 
+function selectNextShip() {
+  const keys = Object.keys(shipsState)
+  const currSelectedIndex = keys.findIndex((key) => key === $inputShip.value)
+  let nonPositionedIndex = -1
+  
+  for(let i = 0; i < keys.length; i++) {
+    const index = (i + currSelectedIndex) % keys.length
+    if (!shipsState[keys[index]].positioned) {
+      nonPositionedIndex = index
+      break;
+    }
+  }
+
+  if (nonPositionedIndex === -1) {
+    $inputShip.selectedIndex = 0
+    $inputDirection.selectedIndex = 0
+    $inputDirection.disabled = true
+    $inputRow.value = ''
+    $inputRow.disabled = true
+    $inputCol.value = ''
+    $inputCol.disabled = true
+    $btnConfirmShip.disabled = true
+  } else {
+    $inputShip.value = keys[nonPositionedIndex]
+    handleInputShipChange()
+  }
+}
+
 //* Event handlers
 
 function handleInputShipChange() {
-  $inputRow.value = shipsState[$inputShip.value].row
-  $inputCol.value = shipsState[$inputShip.value].col
   $inputDirection.value = shipsState[$inputShip.value].direction
-
-  if (shipsState[$inputShip.value].positioned) {
-    ui.hideShipPreview($shipPreview)
-  }
+  $inputDirection.disabled = false
+  $inputRow.value = shipsState[$inputShip.value].row
+  $inputRow.disabled = false
+  $inputCol.value = shipsState[$inputShip.value].col
+  $inputCol.disabled = false
 
   changePositionEffect()
   changeDirectionEffect()
@@ -248,7 +275,6 @@ function handleBtnConfirmShip() {
       $inputRow.value,
       $inputCol.value
     )
-
-
+    selectNextShip()
   }
 }
