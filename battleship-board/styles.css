@@ -8,6 +8,12 @@ body {
   background: #f2f2f2;
 }
 
+.bb-container {
+  min-width: 700px;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
 .bb-board {
   display: grid;
   grid-template-columns: repeat(10, var(--square-size));
