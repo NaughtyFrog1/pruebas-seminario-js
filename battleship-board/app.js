@@ -124,7 +124,7 @@ function isValidPosition(ship, direction, row, col) {
         return (
           parsedRow === shipState.row &&
           (isBetween(shipState.col, parsedCol, colEnd) ||
-            isBetween(shipState.col + SHIPS[ship] - 1, parsedCol, colEnd))
+            isBetween(shipState.col + SHIPS[shipEntry] - 1, parsedCol, colEnd))
         )
       }
       return (
@@ -149,7 +149,7 @@ function isValidPosition(ship, direction, row, col) {
     return (
       parsedCol === shipState.col &&
       (isBetween(shipState.row, parsedRow, rowEnd) ||
-        isBetween(shipState.row + SHIPS[ship] - 1, parsedRow, rowEnd))
+        isBetween(shipState.row + SHIPS[shipEntry] - 1, parsedRow, rowEnd))
     )
   })
 }
