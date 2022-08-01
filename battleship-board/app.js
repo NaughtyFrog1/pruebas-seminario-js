@@ -97,6 +97,7 @@ function setShipPosition(ship, direction, row, col) {
     positioned: true,
   }
   setShipPositionOnBoard(ship, direction, row, col, true)
+  $bntConfirmAll.disabled = !areAllShipsPositioned()
   ui.renderShipOnBoard($playerBoard, ship, direction, row, col)
 }
 
@@ -113,7 +114,8 @@ function unsetShipPosition(ship) {
     shipsState[ship].col,
     false
   )
-
+  
+  $bntConfirmAll.disabled = !areAllShipsPositioned()
   ui.removeShipOfBoard(
     $playerBoard,
     ship,
@@ -124,16 +126,6 @@ function unsetShipPosition(ship) {
 }
 
 //* General Purpose Functions
-
-function updateInputPositionMax(ship, direction) {
-  if (direction === 'horizontal') {
-    $inputRow.max = SQUARES - 1
-    $inputCol.max = SQUARES - SHIPS[ship]
-  } else {
-    $inputRow.max = SQUARES - SHIPS[ship]
-    $inputCol.max = SQUARES - 1
-  }
-}
 
 function isValidPosition(ship, direction, row, col) {
   const parsedRow = parseInt(row, 10)
@@ -151,6 +143,30 @@ function isValidPosition(ship, direction, row, col) {
   return true
 }
 
+function areAllShipsPositioned() {
+  return Object.values(shipsState).every(({positioned}) => positioned)
+}
+
+function updateInputPositionMax(ship, direction) {
+  if (direction === 'horizontal') {
+    $inputRow.max = SQUARES - 1
+    $inputCol.max = SQUARES - SHIPS[ship]
+  } else {
+    $inputRow.max = SQUARES - SHIPS[ship]
+    $inputCol.max = SQUARES - 1
+  }
+}
+
+function showIfPositionIsValid(ship, direction, row, col) {
+  if (isValidPosition(ship, direction, row, col)) {
+    ui.removeRedShipPreview($shipPreview)
+    $btnConfirmShip.disabled = false
+  } else {
+    ui.turnRedShipPreview($shipPreview)
+    $btnConfirmShip.disabled = true
+  }
+}
+
 //* Event handlers
 
 function handleInputShipChange() {
@@ -161,12 +177,17 @@ function handleInputShipChange() {
   if (shipsState[$inputShip.value].positioned) {
     ui.hideShipPreview($shipPreview)
   } else {
+    showIfPositionIsValid(
+      $inputShip.value,
+      $inputDirection.value,
+      $inputRow.value,
+      $inputCol.value
+    )
+    ui.renderShipPreview($shipPreview, $inputShip.value, $inputDirection.value)
+    ui.moveShipPreview($shipPreview, $inputRow.value, $inputCol.value)
     ui.showShipPreview($shipPreview)
   }
-
   updateInputPositionMax($inputShip.value, $inputDirection.value)
-  ui.renderShipPreview($shipPreview, $inputShip.value, $inputDirection.value)
-  ui.moveShipPreview($shipPreview, $inputRow.value, $inputCol.value)
 }
 
 function handleInptutShipDirectionChange() {
@@ -178,6 +199,12 @@ function handleInptutShipDirectionChange() {
     ui.showShipPreview($shipPreview)
   }
 
+  showIfPositionIsValid(
+    $inputShip.value,
+    $inputDirection.value,
+    $inputRow.value,
+    $inputCol.value
+  )
   updateInputPositionMax($inputShip.value, $inputDirection.value)
   ui.renderShipPreview($shipPreview, $inputShip.value, $inputDirection.value)
   ui.moveShipPreview($shipPreview, $inputRow.value, $inputCol.value)
@@ -189,6 +216,12 @@ function handleInputPositionChange() {
     ui.showShipPreview($shipPreview)
   }
 
+  showIfPositionIsValid(
+    $inputShip.value,
+    $inputDirection.value,
+    $inputRow.value,
+    $inputCol.value
+  )
   ui.moveShipPreview($shipPreview, $inputRow.value, $inputCol.value)
 }
 
@@ -199,9 +232,12 @@ function handleBtnConfirmShip() {
     $inputRow.value,
     $inputCol.value
   )
+  ui.hideShipPreview($shipPreview)
 
-  // $inputShip.value =
-  //   $inputShip.options[
-  //     ($inputShip.selectedIndex + 1) % $inputShip.options.length
-  //   ].value
+  $inputShip.value =
+    $inputShip.options[
+      ($inputShip.selectedIndex + 1) % $inputShip.options.length
+    ].value
+  if ($inputShip.selectedIndex !== 0) handleInputShipChange()
+
 }

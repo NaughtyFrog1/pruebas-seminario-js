@@ -1,5 +1,7 @@
 import { SHIPS, SQUARES, SQUARE_SIZE } from './constants.js'
 
+//* Ship Preview
+
 export function renderShipPreview(parentNode, ship, direction) {
   const container = document.createElement('div')
   container.classList.add('bb-ship-preview', `bb-ship-preview--${direction}`)
@@ -40,6 +42,8 @@ export function turnRedShipPreview(node) {
 export function removeRedShipPreview(node) {
   node.classList.remove('bb-ship--red')
 }
+
+//* Boards
 
 export function renderBoard(board) {
   for (let row = 0; row < SQUARES ** 2; row++) {
