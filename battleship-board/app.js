@@ -43,7 +43,7 @@ function initializeBoardState() {
   for (let row = 0; row < SQUARES; row++) {
     const boardRow = []
     for (let col = 0; col < SQUARES; col++) {
-      boardRow.push({ ship: false, hit: false })
+      boardRow.push(false)
     }
     board.push(boardRow)
   }
@@ -65,40 +65,28 @@ function initializeShipsState() {
 
 //* State Setters
 
-function setShipPositionOnBoard(ship, direction, row, col, value) {
+function setShipPosition(ship, direction, row, col) {
   const parsedRow = parseInt(row, 10)
   const parsedCol = parseInt(col, 10)
 
-  if (direction === 'horizontal') {
-    for (let colOffset = 0; colOffset < SHIPS[ship]; colOffset++) {
-      boardState[parsedRow][parsedCol + colOffset].ship = value
-    }
-  } else {
-    for (let rowOffset = 0; rowOffset < SHIPS[ship]; rowOffset++) {
-      boardState[parsedRow + rowOffset][parsedCol].ship = value
-    }
-  }
-}
-
-function setShipPosition(ship, direction, row, col) {
   if (
     !Object.keys(SHIPS).includes(ship) ||
     (direction !== 'horizontal' && direction !== 'vertical') ||
-    !isValidPosition(ship, direction, row, col)
+    !isValidPosition(ship, direction, parsedRow, parsedCol)
   ) {
     alert('Invalid ship data')
     return
   }
   shipsState[ship] = {
     ...shipsState[ship],
-    row,
-    col,
+    row: parsedRow,
+    col: parsedCol,
     direction,
     positioned: true,
   }
-  setShipPositionOnBoard(ship, direction, row, col, true)
+
   $bntConfirmAll.disabled = !areAllShipsPositioned()
-  ui.renderShipOnBoard($playerBoard, ship, direction, row, col)
+  ui.renderShipOnBoard($playerBoard, ship, direction, parsedRow, parsedCol)
 }
 
 function unsetShipPosition(ship) {
@@ -107,14 +95,6 @@ function unsetShipPosition(ship) {
     return
   }
   shipsState[ship].positioned = false
-  setShipPositionOnBoard(
-    ship,
-    shipsState[ship].direction,
-    shipsState[ship].row,
-    shipsState[ship].col,
-    false
-  )
-  
   $bntConfirmAll.disabled = !areAllShipsPositioned()
   ui.removeShipOfBoard(
     $playerBoard,
@@ -127,24 +107,56 @@ function unsetShipPosition(ship) {
 
 //* General Purpose Functions
 
+function isBetween(num, min, max) {
+  return num >= min && num <= max
+}
+
 function isValidPosition(ship, direction, row, col) {
   const parsedRow = parseInt(row, 10)
   const parsedCol = parseInt(col, 10)
 
-  if (direction === 'horizontal') {
-    for (let colOffset = 0; colOffset < SHIPS[ship]; colOffset++) {
-      if (boardState[parsedRow][parsedCol + colOffset].ship) return false
+  return !Object.entries(shipsState).some(([shipEntry, shipState]) => {
+    if (ship === shipEntry) return false
+    if (!shipState.positioned) return false
+
+    if (direction === 'horizontal') {
+      const colEnd = parsedCol + SHIPS[ship] - 1
+      if (shipState.direction === 'horizontal') {
+        return (
+          parsedRow === shipState.row &&
+          (isBetween(shipState.col, parsedCol, colEnd) ||
+            isBetween(shipState.col + SHIPS[ship] - 1, parsedCol, colEnd))
+        )
+      }
+      return (
+        isBetween(shipState.col, parsedCol, colEnd) &&
+        isBetween(
+          parsedRow,
+          shipState.row,
+          shipState.row + SHIPS[shipEntry] - 1
+        )
+      )
     }
-    return true
-  }
-  for (let rowOffset = 0; rowOffset < SHIPS[ship]; rowOffset++) {
-    if (boardState[parsedRow + rowOffset][parsedCol].ship) return false
-  }
-  return true
+    const rowEnd = parsedRow + SHIPS[ship] - 1
+    if (shipState.direction === 'horizontal') {
+      return (
+        isBetween(
+          parsedCol,
+          shipState.col,
+          shipState.col + SHIPS[shipEntry] - 1
+        ) && isBetween(shipState.row, parsedRow, rowEnd)
+      )
+    }
+    return (
+      parsedCol === shipState.col &&
+      (isBetween(shipState.row, parsedRow, rowEnd) ||
+        isBetween(shipState.row + SHIPS[ship] - 1, parsedRow, rowEnd))
+    )
+  })
 }
 
 function areAllShipsPositioned() {
-  return Object.values(shipsState).every(({positioned}) => positioned)
+  return Object.values(shipsState).every(({ positioned }) => positioned)
 }
 
 function updateInputPositionMax(ship, direction) {
@@ -159,7 +171,7 @@ function updateInputPositionMax(ship, direction) {
 
 function showIfPositionIsValid(ship, direction, row, col) {
   if (isValidPosition(ship, direction, row, col)) {
-    ui.removeRedShipPreview($shipPreview)
+    ui.removeRedFromShipPreview($shipPreview)
     $btnConfirmShip.disabled = false
   } else {
     ui.turnRedShipPreview($shipPreview)
@@ -239,5 +251,4 @@ function handleBtnConfirmShip() {
       ($inputShip.selectedIndex + 1) % $inputShip.options.length
     ].value
   if ($inputShip.selectedIndex !== 0) handleInputShipChange()
-
 }

@@ -39,7 +39,7 @@ export function turnRedShipPreview(node) {
   node.classList.add('bb-ship--red')
 }
 
-export function removeRedShipPreview(node) {
+export function removeRedFromShipPreview(node) {
   node.classList.remove('bb-ship--red')
 }
 
