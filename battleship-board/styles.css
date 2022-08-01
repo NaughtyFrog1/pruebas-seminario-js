@@ -58,19 +58,13 @@ body {
 .bb-ship--horizontal .bb-ship__body.bb-ship__body--tail {
   width:calc(var(--square-size) * 0.8);
   margin-left: calc(var(--square-size) * 0.2);
-  border-top-left-radius: 25% 50%;
-  border-top-right-radius: 0;
-  border-bottom-right-radius: 0;
-  border-bottom-left-radius: 25% 50%;
+  border-radius: 25% 0 0 25% / 50% 0 0 50%;
 }
 
 .bb-ship--horizontal .bb-ship__body.bb-ship__body--head {
   width:calc(var(--square-size) * 0.8);
   margin-right: calc(var(--square-size) * 0.2);
-  border-top-left-radius: 0;
-  border-top-right-radius: 100% 50%;
-  border-bottom-right-radius: 100% 50%;
-  border-bottom-left-radius: 0;
+  border-radius: 0 100% 100% 0 / 0 50% 50% 0;
 }
 
 .bb-ship--vertical .bb-ship__body {
@@ -82,17 +76,15 @@ body {
 .bb-ship--vertical .bb-ship__body--tail {
   height: calc(var(--square-size) * 0.8);
   margin-bottom: calc(var(--square-size) * 0.2);
-  border-top-left-radius: 0;
-  border-top-right-radius: 0;
-  border-bottom-right-radius: 50% 25%;
-  border-bottom-left-radius: 50% 25%;
+  border-radius: 0  0 50% 50% / 0 0 25% 25%;
 }
 
 .bb-ship--vertical .bb-ship__body--head {
   height: calc(var(--square-size) * 0.8);
   margin-top: calc(var(--square-size) * 0.2);
-  border-top-left-radius: 50% 100%;
-  border-top-right-radius: 50% 100%;
-  border-bottom-right-radius: 0;
-  border-bottom-left-radius: 0;
+  border-radius: 50% 50% 0 0 / 100% 100% 0 0;
+}
+
+.bb-ship--red .bb-ship__body {
+  background-color: #af0404;
 }

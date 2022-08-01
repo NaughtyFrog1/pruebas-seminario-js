@@ -65,6 +65,21 @@ function initializeShipsState() {
 
 //* State Setters
 
+function setShipPositionOnBoard(ship, direction, row, col, value) {
+  const parsedRow = parseInt(row, 10)
+  const parsedCol = parseInt(col, 10)
+
+  if (direction === 'horizontal') {
+    for (let colOffset = 0; colOffset < SHIPS[ship]; colOffset++) {
+      boardState[parsedRow][parsedCol + colOffset].ship = value
+    }
+  } else {
+    for (let rowOffset = 0; rowOffset < SHIPS[ship]; rowOffset++) {
+      boardState[parsedRow + rowOffset][parsedCol].ship = value
+    }
+  }
+}
+
 function setShipPosition(ship, direction, row, col) {
   if (
     !Object.keys(SHIPS).includes(ship) ||
@@ -81,6 +96,7 @@ function setShipPosition(ship, direction, row, col) {
     direction,
     positioned: true,
   }
+  setShipPositionOnBoard(ship, direction, row, col, true)
   ui.renderShipOnBoard($playerBoard, ship, direction, row, col)
 }
 
@@ -90,6 +106,14 @@ function unsetShipPosition(ship) {
     return
   }
   shipsState[ship].positioned = false
+  setShipPositionOnBoard(
+    ship,
+    shipsState[ship].direction,
+    shipsState[ship].row,
+    shipsState[ship].col,
+    false
+  )
+
   ui.removeShipOfBoard(
     $playerBoard,
     ship,

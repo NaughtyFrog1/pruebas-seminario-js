@@ -1,13 +1,5 @@
 import { SHIPS, SQUARES, SQUARE_SIZE } from './constants.js'
 
-export function renderBoard(board) {
-  for (let row = 0; row < SQUARES ** 2; row++) {
-    const square = document.createElement('div')
-    square.classList.add('bb-board__square')
-    board.appendChild(square)
-  }
-}
-
 export function renderShipPreview(parentNode, ship, direction) {
   const container = document.createElement('div')
   container.classList.add('bb-ship-preview', `bb-ship-preview--${direction}`)
@@ -39,6 +31,22 @@ export function hideShipPreview(node) {
 
 export function showShipPreview(node) {
   node.classList.remove('d-none')
+}
+
+export function turnRedShipPreview(node) {
+  node.classList.add('bb-ship--red')
+}
+
+export function removeRedShipPreview(node) {
+  node.classList.remove('bb-ship--red')
+}
+
+export function renderBoard(board) {
+  for (let row = 0; row < SQUARES ** 2; row++) {
+    const square = document.createElement('div')
+    square.classList.add('bb-board__square')
+    board.appendChild(square)
+  }
 }
 
 function renderShipOnSquare(square, direction, part = '') {
