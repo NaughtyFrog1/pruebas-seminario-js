@@ -3,15 +3,14 @@ const SQUARES = 10
 const SHIPS = Object.freeze({
   // shipName: shipSize
   carrier: 5,
-  batthleship: 4,
+  battleship: 4,
   cruiser: 3,
   submarine: 3,
   destroyer: 2,
 })
 
 const boardState = initializeBoardState()
-const shipPositionsState = initializeShipPositionState()
-const shipHitsState = intitializeShipHitsState()
+const shipsState = initializeShipsState()
 
 const $playerStatus = document.querySelector('#bbPlayerStatus')
 const $adversaryStatus = document.querySelector('#bbAdversaryStatus')
@@ -45,33 +44,70 @@ $btnConfirmShip.addEventListener('click', handleBtnConfirmShip)
 $inputRow.addEventListener('keypress', (e) => e.preventDefault())
 $inputCol.addEventListener('keypress', (e) => e.preventDefault())
 
-//* Functions
+//* State Initializers
 
 function initializeBoardState() {
   const board = []
   for (let row = 0; row < SQUARES; row++) {
     const boardRow = []
     for (let col = 0; col < SQUARES; col++) {
-      boardRow.push({ hit: false, ship: '' })
+      boardRow.push({ ship: false, hit: false })
     }
     board.push(boardRow)
   }
   return board
 }
 
-function initializeShipPositionState() {
+function initializeShipsState() {
   return Object.keys(SHIPS).reduce((obj, ship) => {
-    obj[ship] = { row: 0, col: 0, direction: 'horizontal', positioned: false }
+    obj[ship] = {
+      row: 0,
+      col: 0,
+      direction: 'horizontal',
+      positioned: false,
+      hits: 0,
+    }
     return obj
   }, {})
 }
 
-function intitializeShipHitsState() {
-  return Object.keys(SHIPS).reduce((obj, ship) => {
-    obj[ship] = 0
-    return obj
-  }, {})
+//* State Setters
+
+function setShipPosition(ship, direction, row, col) {
+  if (
+    !Object.keys(SHIPS).includes(ship) ||
+    (direction !== 'horizontal' && direction !== 'vertical') ||
+    !isValidPosition(ship, direction, row, col)
+  ) {
+    alert('Invalid ship data')
+    return
+  }
+  shipsState[ship] = {
+    ...shipsState[ship],
+    row,
+    col,
+    direction,
+    positioned: true,
+  }
+  renderShipOnBoard($playerBoard, ship, direction, row, col)
 }
+
+function unsetShipPosition(ship) {
+  if (!Object.keys(SHIPS).includes(ship)) {
+    alert('Invalid ship')
+    return
+  }
+  shipsState[ship].positioned = false
+  removeShipOfBoard(
+    $playerBoard,
+    ship,
+    shipsState[ship].direction,
+    shipsState[ship].row,
+    shipsState[ship].col
+  )
+}
+
+//* UI Functions
 
 function renderBoard(board) {
   for (let row = 0; row < SQUARES ** 2; row++) {
@@ -101,19 +137,17 @@ function renderShipPreview(parentNode, ship, direction) {
   parentNode.appendChild(container)
 }
 
-function moveShipPreview(parentNode, row, col) {
-  parentNode.style.top = `${row * SQUARE_SIZE}px`
-  parentNode.style.left = `${col * SQUARE_SIZE}px`
+function moveShipPreview(node, row, col) {
+  node.style.top = `${row * SQUARE_SIZE}px`
+  node.style.left = `${col * SQUARE_SIZE}px`
 }
 
-function updateInputPositionMax(ship, direction) {
-  if (direction === 'horizontal') {
-    $inputRow.max = SQUARES - 1
-    $inputCol.max = SQUARES - SHIPS[ship]
-  } else {
-    $inputRow.max = SQUARES - SHIPS[ship]
-    $inputCol.max = SQUARES - 1
-  }
+function hideShipPreview(node) {
+  node.classList.add('d-none')
+}
+
+function showShipPreview(node) {
+  node.classList.remove('d-none')
 }
 
 function renderShipOnSquare(square, direction, part = '') {
@@ -161,12 +195,63 @@ function renderShipOnBoard(board, ship, direction, rowStart, colStart) {
   }
 }
 
+function removeShipOfBoard(board, ship, direction, rowStart, colStart) {
+  const parsedRow = parseInt(rowStart, 10)
+  const parsedCol = parseInt(colStart, 10)
+
+  if (direction === 'horizontal') {
+    for (let colOffset = 0; colOffset < SHIPS[ship]; colOffset++) {
+      const shipPos = parsedRow * SQUARES + parsedCol + colOffset
+      board.children[shipPos].innerHTML = ''
+    }
+  } else {
+    for (let rowOffset = 0; rowOffset < SHIPS[ship]; rowOffset++) {
+      const shipPos = (parsedRow + rowOffset) * SQUARES + parsedCol
+      board.children[shipPos].innerHTML = ''
+    }
+  }
+}
+
+//* General Purpose Functions
+
+function updateInputPositionMax(ship, direction) {
+  if (direction === 'horizontal') {
+    $inputRow.max = SQUARES - 1
+    $inputCol.max = SQUARES - SHIPS[ship]
+  } else {
+    $inputRow.max = SQUARES - SHIPS[ship]
+    $inputCol.max = SQUARES - 1
+  }
+}
+
+function isValidPosition(ship, direction, row, col) {
+  const parsedRow = parseInt(row, 10)
+  const parsedCol = parseInt(col, 10)
+
+  if (direction === 'horizontal') {
+    for (let colOffset = 0; colOffset < SHIPS[ship]; colOffset++) {
+      if (boardState[parsedRow][parsedCol + colOffset].ship) return false
+    }
+    return true
+  }
+  for (let rowOffset = 0; rowOffset < SHIPS[ship]; rowOffset++) {
+    if (boardState[parsedRow + rowOffset][parsedCol].ship) return true
+  }
+  return false
+}
+
 //* Event handlers
 
 function handleInputShipChange() {
-  $inputRow.value = shipPositionsState[$inputShip.value].row
-  $inputCol.value = shipPositionsState[$inputShip.value].col
-  $inputDirection.value = shipPositionsState[$inputShip.value].direction
+  $inputRow.value = shipsState[$inputShip.value].row
+  $inputCol.value = shipsState[$inputShip.value].col
+  $inputDirection.value = shipsState[$inputShip.value].direction
+
+  if (shipsState[$inputShip.value].positioned) {
+    hideShipPreview($shipPreview)
+  } else {
+    showShipPreview($shipPreview)
+  }
 
   updateInputPositionMax($inputShip.value, $inputDirection.value)
   renderShipPreview($shipPreview, $inputShip.value, $inputDirection.value)
@@ -177,21 +262,35 @@ function handleInptutShipDirectionChange() {
   $inputRow.value = 0
   $inputCol.value = 0
 
+  if (shipsState[$inputShip.value].positioned) {
+    unsetShipPosition($inputShip.value)
+    showShipPreview($shipPreview)
+  }
+
   updateInputPositionMax($inputShip.value, $inputDirection.value)
   renderShipPreview($shipPreview, $inputShip.value, $inputDirection.value)
   moveShipPreview($shipPreview, $inputRow.value, $inputCol.value)
 }
 
 function handleInputPositionChange() {
+  if (shipsState[$inputShip.value].positioned) {
+    unsetShipPosition($inputShip.value)
+    showShipPreview($shipPreview)
+  }
+
   moveShipPreview($shipPreview, $inputRow.value, $inputCol.value)
 }
 
 function handleBtnConfirmShip() {
-  renderShipOnBoard(
-    $playerBoard,
+  setShipPosition(
     $inputShip.value,
     $inputDirection.value,
     $inputRow.value,
     $inputCol.value
   )
+
+  // $inputShip.value =
+  //   $inputShip.options[
+  //     ($inputShip.selectedIndex + 1) % $inputShip.options.length
+  //   ].value
 }
