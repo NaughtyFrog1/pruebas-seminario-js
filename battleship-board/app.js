@@ -74,7 +74,7 @@ function setShipPosition(ship, direction, row, col) {
     !isValidPosition(ship, direction, parsedRow, parsedCol)
   ) {
     alert('Invalid ship data')
-    return
+    return false
   }
   shipsState[ship] = {
     ...shipsState[ship],
@@ -83,28 +83,19 @@ function setShipPosition(ship, direction, row, col) {
     direction,
     positioned: true,
   }
-
-  $bntConfirmAll.disabled = !areAllShipsPositioned()
-  ui.renderShipOnBoard($playerBoard, ship, direction, parsedRow, parsedCol)
+  return true
 }
 
 function unsetShipPosition(ship) {
   if (!Object.keys(SHIPS).includes(ship)) {
     alert('Invalid ship')
-    return
+    return false
   }
   shipsState[ship].positioned = false
-  $bntConfirmAll.disabled = !areAllShipsPositioned()
-  ui.removeShipOfBoard(
-    $playerBoard,
-    ship,
-    shipsState[ship].direction,
-    shipsState[ship].row,
-    shipsState[ship].col
-  )
+  return true
 }
 
-//* General Purpose Functions
+//* Validations
 
 function isBetween(num, min, max) {
   return num >= min && num <= max
@@ -166,24 +157,50 @@ function areAllShipsPositioned() {
   return Object.values(shipsState).every(({ positioned }) => positioned)
 }
 
-function updateInputPositionMax(ship, direction) {
-  if (direction === 'horizontal') {
-    $inputRow.max = SQUARES - 1
-    $inputCol.max = SQUARES - SHIPS[ship]
-  } else {
-    $inputRow.max = SQUARES - SHIPS[ship]
-    $inputCol.max = SQUARES - 1
-  }
-}
+//* Side effects of events handlers
 
-function showIfPositionIsValid(ship, direction, row, col) {
-  if (isValidPosition(ship, direction, row, col)) {
+function changePositionEffect() {
+  if (shipsState[$inputShip.value].positioned) {
+    const shipUnseted = unsetShipPosition($inputShip.value)
+    if (shipUnseted) {
+      $bntConfirmAll.disabled = false
+      ui.removeShipOfBoard(
+        $playerBoard,
+        $inputShip.value,
+        shipsState[$inputShip.value].direction,
+        shipsState[$inputShip.value].row,
+        shipsState[$inputShip.value].col
+      )
+      ui.showShipPreview($shipPreview)
+    }
+  }
+  if (
+    isValidPosition(
+      $inputShip.value,
+      $inputDirection.value,
+      $inputRow.value,
+      $inputCol.value
+    )
+  ) {
     ui.removeRedFromShipPreview($shipPreview)
     $btnConfirmShip.disabled = false
   } else {
     ui.turnRedShipPreview($shipPreview)
     $btnConfirmShip.disabled = true
   }
+  ui.moveShipPreview($shipPreview, $inputRow.value, $inputCol.value)
+}
+
+function changeDirectionEffect() {
+  if ($inputDirection.value === 'horizontal') {
+    $inputRow.max = SQUARES - 1
+    $inputCol.max = SQUARES - SHIPS[$inputShip.value]
+  } else {
+    $inputRow.max = SQUARES - SHIPS[$inputShip.value]
+    $inputCol.max = SQUARES - 1
+  }
+
+  ui.renderShipPreview($shipPreview, $inputShip.value, $inputDirection.value)
 }
 
 //* Event handlers
@@ -195,67 +212,40 @@ function handleInputShipChange() {
 
   if (shipsState[$inputShip.value].positioned) {
     ui.hideShipPreview($shipPreview)
-  } else {
-    showIfPositionIsValid(
-      $inputShip.value,
-      $inputDirection.value,
-      $inputRow.value,
-      $inputCol.value
-    )
-    ui.renderShipPreview($shipPreview, $inputShip.value, $inputDirection.value)
-    ui.moveShipPreview($shipPreview, $inputRow.value, $inputCol.value)
-    ui.showShipPreview($shipPreview)
   }
-  updateInputPositionMax($inputShip.value, $inputDirection.value)
+
+  changePositionEffect()
+  changeDirectionEffect()
 }
 
 function handleInptutShipDirectionChange() {
   $inputRow.value = 0
   $inputCol.value = 0
 
-  if (shipsState[$inputShip.value].positioned) {
-    unsetShipPosition($inputShip.value)
-    ui.showShipPreview($shipPreview)
-  }
-
-  showIfPositionIsValid(
-    $inputShip.value,
-    $inputDirection.value,
-    $inputRow.value,
-    $inputCol.value
-  )
-  updateInputPositionMax($inputShip.value, $inputDirection.value)
-  ui.renderShipPreview($shipPreview, $inputShip.value, $inputDirection.value)
-  ui.moveShipPreview($shipPreview, $inputRow.value, $inputCol.value)
+  changePositionEffect()
+  changeDirectionEffect()
 }
 
 function handleInputPositionChange() {
-  if (shipsState[$inputShip.value].positioned) {
-    unsetShipPosition($inputShip.value)
-    ui.showShipPreview($shipPreview)
-  }
-
-  showIfPositionIsValid(
-    $inputShip.value,
-    $inputDirection.value,
-    $inputRow.value,
-    $inputCol.value
-  )
-  ui.moveShipPreview($shipPreview, $inputRow.value, $inputCol.value)
+  changePositionEffect()
 }
 
 function handleBtnConfirmShip() {
-  setShipPosition(
+  const shipSetted = setShipPosition(
     $inputShip.value,
     $inputDirection.value,
     $inputRow.value,
     $inputCol.value
   )
-  ui.hideShipPreview($shipPreview)
 
-  $inputShip.value =
-    $inputShip.options[
-      ($inputShip.selectedIndex + 1) % $inputShip.options.length
-    ].value
-  if ($inputShip.selectedIndex !== 0) handleInputShipChange()
+  if (shipSetted) {
+    $bntConfirmAll.disabled = !areAllShipsPositioned()
+    ui.renderShipOnBoard(
+      $playerBoard,
+      $inputShip.value,
+      $inputDirection.value,
+      $inputRow.value,
+      $inputCol.value
+    )
+  }
 }
