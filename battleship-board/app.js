@@ -71,7 +71,6 @@ function setShipPosition(ship, direction, row, col) {
 
   if (
     !Object.keys(SHIPS).includes(ship) ||
-    (direction !== 'horizontal' && direction !== 'vertical') ||
     !isValidPosition(ship, direction, parsedRow, parsedCol)
   ) {
     alert('Invalid ship data')
@@ -115,8 +114,16 @@ function isValidPosition(ship, direction, row, col) {
   const parsedRow = parseInt(row, 10)
   const parsedCol = parseInt(col, 10)
 
+  if (direction !== 'horizontal' && direction !== 'vertical') return false
+  if (parsedCol < 0 || parsedRow < 0) return false
+  if (direction === 'horizontal' && parsedCol > SQUARES - SHIPS[ship]) {
+    return false
+  }
+  if (direction === 'vertical' && parsedRow > SQUARES - SHIPS[ship]) {
+    return true
+  }
+
   return !Object.entries(shipsState).some(([shipEntry, shipState]) => {
-    if (ship === shipEntry) return false
     if (!shipState.positioned) return false
 
     if (direction === 'horizontal') {
