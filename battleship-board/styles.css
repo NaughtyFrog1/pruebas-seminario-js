@@ -9,8 +9,7 @@ body {
 }
 
 .bb-container {
-  min-width: 700px;
-  max-width: 800px;
+  width: calc(var(--square-size) * 25);
   margin: 0 auto;
 }
 

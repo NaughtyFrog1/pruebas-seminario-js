@@ -1,4 +1,4 @@
-export const SQUARE_SIZE = 30
+export const SQUARE_SIZE = 35
 export const SQUARES = 10
 export const SHIPS = Object.freeze({
   // shipName: shipSize
