@@ -105,13 +105,14 @@ function isValidPosition(ship, direction, row, col) {
   const parsedRow = parseInt(row, 10)
   const parsedCol = parseInt(col, 10)
 
-  if (direction !== 'horizontal' && direction !== 'vertical') return false
-  if (parsedCol < 0 || parsedRow < 0) return false
-  if (direction === 'horizontal' && parsedCol > SQUARES - SHIPS[ship]) {
+  if (
+    (direction !== 'horizontal' && direction !== 'vertical') ||
+    parsedCol < 0 ||
+    parsedRow < 0 ||
+    (direction === 'horizontal' && parsedCol > SQUARES - SHIPS[ship]) ||
+    (direction === 'vertical' && parsedRow > SQUARES - SHIPS[ship])
+  ) {
     return false
-  }
-  if (direction === 'vertical' && parsedRow > SQUARES - SHIPS[ship]) {
-    return true
   }
 
   return !Object.entries(shipsState).some(([shipEntry, shipState]) => {
@@ -247,5 +248,7 @@ function handleBtnConfirmShip() {
       $inputRow.value,
       $inputCol.value
     )
+
+
   }
 }
